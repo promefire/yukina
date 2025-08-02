@@ -4,21 +4,65 @@ import { pinyin } from "pinyin-pro";
 
 
 function convertToPinyinSlug(text: string): string {
-  // 使用pinyin-pro转换为拼音，不带音调
-  const pinyinResult = pinyin(text, { 
-    toneType: "none", 
-    type: "array" 
+  // 将文本按中文和非中文字符分组处理
+  const segments: string[] = [];
+  let currentSegment = "";
+  let isChineseSegment = false;
+  
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const isChinese = /[\u4e00-\u9fff]/.test(char);
+    
+    if (i === 0) {
+      // 第一个字符，初始化状态
+      currentSegment = char;
+      isChineseSegment = isChinese;
+    } else if (isChinese === isChineseSegment) {
+      // 同类型字符，继续添加到当前段
+      currentSegment += char;
+    } else {
+      // 不同类型字符，保存当前段并开始新段
+      segments.push(currentSegment);
+      currentSegment = char;
+      isChineseSegment = isChinese;
+    }
+  }
+  
+  // 添加最后一段
+  if (currentSegment) {
+    segments.push(currentSegment);
+  }
+  
+  // 处理每个段
+  const processedSegments = segments.map(segment => {
+    const isChinese = /[\u4e00-\u9fff]/.test(segment[0]);
+    
+    if (isChinese) {
+      // 中文段：转换为拼音
+      const pinyinResult = pinyin(segment, { 
+        toneType: "none", 
+        type: "array" 
+      });
+      return pinyinResult.join("-");
+    } else {
+      // 非中文段：保持原样，但清理特殊字符
+      return segment
+        .toLowerCase()
+        // 保留字母数字和连字符，将其他字符替换为连字符
+        .replace(/[^a-z0-9\-]/g, "-")
+        // 移除多余的连字符
+        .replace(/-+/g, "-")
+        // 移除开头和结尾的连字符
+        .replace(/^-+|-+$/g, "");
+    }
   });
   
-  // 将拼音数组用连字符连接，并转换为小写
-  return pinyinResult
+  // 用连字符连接所有段
+  return processedSegments
+    .filter(segment => segment.length > 0) // 过滤空段
     .join("-")
-    .toLowerCase()
-    // 移除非字母数字和连字符的字符
-    .replace(/[^a-z0-9\-]/g, "")
-    // 移除多余的连字符
+    // 最终清理：移除多余的连字符
     .replace(/-+/g, "-")
-    // 移除开头和结尾的连字符
     .replace(/^-+|-+$/g, "");
 }
 /**
