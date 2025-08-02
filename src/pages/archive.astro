@@ -2,9 +2,9 @@
 import PostArchiveLayout from "../layouts/PostArchiveLayout.astro";
 import I18nKeys from "../locales/keys";
 import { i18n } from "../locales/translation";
-import { GetArchives } from "../utils/content";
+import { GetArchiveMap } from "../utils/content";
 
-const archiveMap = await GetArchives();
+const archiveMap = await GetArchiveMap();
 ---
 
 <PostArchiveLayout
