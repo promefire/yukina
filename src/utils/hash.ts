@@ -1,6 +1,26 @@
 import YukinaConfig from "../../yukina.config";
 import CryptoJS from "crypto-js";
+import { pinyin } from "pinyin-pro";
 
+
+function convertToPinyinSlug(text: string): string {
+  // 使用pinyin-pro转换为拼音，不带音调
+  const pinyinResult = pinyin(text, { 
+    toneType: "none", 
+    type: "array" 
+  });
+  
+  // 将拼音数组用连字符连接，并转换为小写
+  return pinyinResult
+    .join("-")
+    .toLowerCase()
+    // 移除非字母数字和连字符的字符
+    .replace(/[^a-z0-9\-]/g, "")
+    // 移除多余的连字符
+    .replace(/-+/g, "-")
+    // 移除开头和结尾的连字符
+    .replace(/^-+|-+$/g, "");
+}
 /**
  * Converts a given slug to a hashed slug or returns the raw slug based on the configuration.
  *
@@ -16,6 +36,10 @@ export function IdToSlug(slug: string): string {
     }
     case "RAW":
       return slug;
+    case "PINYIN": {
+      // 新增拼音模式
+      return convertToPinyinSlug(slug);
+    }
     default:
       return slug;
   }

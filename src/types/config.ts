@@ -26,7 +26,7 @@ interface Configuration {
 
   banners: string[];
 
-  slugMode: "HASH" | "RAW";
+  slugMode: "HASH" | "RAW" | "PINYIN";
 
   license: {
     name: string;
