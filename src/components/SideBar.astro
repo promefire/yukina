@@ -6,6 +6,13 @@ import { i18n } from "../locales/translation";
 import { GetCategories, GetTags } from "../utils/content";
 import SocialIcon from "./widgets/SocialIcon.astro";
 
+export interface Props {
+  hideCategories?: boolean;
+  hideTags?: boolean;
+}
+
+const { hideCategories = false, hideTags = false } = Astro.props;
+
 const tags = await GetTags();
 const categories = await GetCategories();
 
@@ -47,7 +54,7 @@ const tagKeys = [...tags.keys()];
 
     <!-- categories -->
     {
-      categories.size !== 0 && (
+      !hideCategories && categories.size !== 0 && (
         <div
           class="onload-animation space-y-2 rounded-3xl bg-[var(--card-color)] p-3"
           style="animation-delay: calc(var(--onload-animation-delay) + 1 * var(--onload-animation-interval));"
@@ -94,7 +101,7 @@ const tagKeys = [...tags.keys()];
 
     <!-- tags -->
     {
-      tags.size !== 0 && (
+      !hideTags && tags.size !== 0 && (
         <div
           class="onload-animation space-y-2 rounded-3xl bg-[var(--card-color)] p-3"
           style="animation-delay: calc(var(--onload-animation-delay) + 2 * var(--onload-animation-interval));"

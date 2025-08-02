@@ -28,7 +28,13 @@ const {
 } = Astro.props;
 ---
 
-<Main title={title} subTitle={subTitle} bannerImage={bannerImage}>
+<Main 
+  title={title} 
+  subTitle={subTitle} 
+  bannerImage={bannerImage}
+  hideCategories={true}
+  hideTags={true}
+>
   <!-- <Fragment set:html={tocHTMLString} /> -->
   <div class="article-wrapper">
     <div class="article">
