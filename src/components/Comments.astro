@@ -1,0 +1,96 @@
+---
+import YukinaConfig from "../../yukina.config";
+---
+
+{YukinaConfig.giscus.enable && (
+  <div id="giscus-container" class="mt-8">
+    <!-- Giscus评论将在这里加载 -->
+  </div>
+)}
+
+{YukinaConfig.giscus.enable && (
+  <script define:vars={{ giscusConfig: YukinaConfig.giscus }}>
+  // 等待DOM加载完成
+  document.addEventListener('DOMContentLoaded', function() {
+    loadGiscus();
+    
+    // 监听主题变化
+    const observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+          updateGiscusTheme();
+        }
+      });
+    });
+    
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    });
+  });
+  
+  function loadGiscus() {
+    const container = document.getElementById('giscus-container');
+    if (!container) return;
+    
+    // 清空容器
+    container.innerHTML = '';
+    
+    // 获取当前主题
+    const currentTheme = getCurrentTheme();
+    
+    // 创建Giscus脚本
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', giscusConfig.repo);
+    script.setAttribute('data-repo-id', giscusConfig.repoId);
+    script.setAttribute('data-category', giscusConfig.category);
+    script.setAttribute('data-category-id', giscusConfig.categoryId);
+    script.setAttribute('data-mapping', giscusConfig.mapping);
+    script.setAttribute('data-strict', giscusConfig.strict);
+    script.setAttribute('data-reactions-enabled', giscusConfig.reactionsEnabled);
+    script.setAttribute('data-emit-metadata', giscusConfig.emitMetadata);
+    script.setAttribute('data-input-position', giscusConfig.inputPosition);
+    script.setAttribute('data-theme', currentTheme);
+    script.setAttribute('data-lang', giscusConfig.lang);
+    script.setAttribute('data-loading', giscusConfig.loading);
+    script.setAttribute('crossorigin', 'anonymous');
+    script.async = true;
+    
+    container.appendChild(script);
+  }
+  
+  function getCurrentTheme() {
+    const theme = document.documentElement.getAttribute('data-theme') || 'light';
+    return theme === 'dark' ? 'dark' : 'light';
+  }
+  
+  function updateGiscusTheme() {
+    const iframe = document.querySelector('iframe.giscus-frame');
+    if (iframe) {
+      const currentTheme = getCurrentTheme();
+      iframe.contentWindow.postMessage(
+        {
+          giscus: {
+            setConfig: {
+              theme: currentTheme
+            }
+          }
+        },
+        'https://giscus.app'
+      );
+    }
+  }
+  </script>
+)}
+
+<style>
+  #giscus-container {
+    @apply rounded-lg;
+  }
+  
+  /* 确保Giscus在暗色主题下正确显示 */
+  :global(.giscus-frame) {
+    @apply w-full;
+  }
+</style>

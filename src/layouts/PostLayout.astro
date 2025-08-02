@@ -2,6 +2,7 @@
 import Main from "../layouts/MainLayout.astro";
 import Markdown from "../components/Markdown.astro";
 import CopyRight from "../components/misc/CopyRight.astro";
+import Comments from "../components/Comments.astro";
 
 interface Props {
   title?: string;
@@ -45,6 +46,8 @@ const {
           />
         )
       }
+      <!-- 添加评论组件 -->
+      <Comments />
     </div>
   </div>
 </Main>
