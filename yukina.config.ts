@@ -77,10 +77,10 @@ const YukinaConfig: Configuration = {
   // Giscus评论系统配置
   giscus: {
     enable: true, // 设置为true启用评论，false禁用评论
-    repo: "promefire/myBlogComment",
-    repoId: "R_kgDOJnPF5g",
-    category: "Announcements",
-    categoryId: "DIC_kwDOJnPF5s4CbscM",
+    repo: "",
+    repoId: "",
+    category: "",
+    categoryId: "",
     mapping: "url",
     strict: "0",
     reactionsEnabled: "1",

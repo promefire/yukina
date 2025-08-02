@@ -39,7 +39,7 @@ export interface Category {
  * @returns A promise that resolves to an array of sorted blog posts with navigation properties.
  */
 export async function GetSortedPosts() {
-  const allBlogPosts = await getCollection("posts", ({ data }) => {
+  const allBlogPosts = await getCollection("post", ({ data }) => {
     return import.meta.env.PROD ? data.draft !== true : true;
   });
   const sorted = allBlogPosts.sort((a, b) => {
@@ -70,8 +70,8 @@ export async function GetSortedPosts() {
  *
  * @returns A promise that resolves to a map of archives grouped by year.
  */
-export async function GetArchives() {
-  const allBlogPosts = await getCollection("posts", ({ data }) => {
+export async function GetArchiveMap() {
+  const allBlogPosts = await getCollection("post", ({ data }) => {
     return import.meta.env.PROD ? data.draft !== true : true;
   });
 
@@ -85,7 +85,7 @@ export async function GetArchives() {
     }
     archives.get(year)!.push({
       title: post.data.title,
-      id: `/posts/${IdToSlug(post.id)}`,
+      id: `/post/${IdToSlug(post.id)}`,
       date: date,
       tags: post.data.tags,
     });
@@ -110,7 +110,7 @@ export async function GetArchives() {
  * @returns A promise that resolves to a map of tags. Each key is a tag slug, and the value is an object containing the tag's name, slug, and associated posts.
  */
 export async function GetTags() {
-  const allBlogPosts = await getCollection("posts", ({ data }) => {
+  const allBlogPosts = await getCollection("post", ({ data }) => {
     return import.meta.env.PROD ? data.draft !== true : true;
   });
 
@@ -127,7 +127,7 @@ export async function GetTags() {
       }
       tags.get(tagSlug)!.posts.push({
         title: post.data.title,
-        id: `/posts/${IdToSlug(post.id)}`,
+        id: `/post/${IdToSlug(post.id)}`,
         date: new Date(post.data.published),
         tags: post.data.tags,
       });
@@ -146,7 +146,7 @@ export async function GetTags() {
  * @returns A promise that resolves to a map of categories, where each category contains its name, slug, and associated posts.
  */
 export async function GetCategories() {
-  const allBlogPosts = await getCollection("posts", ({ data }) => {
+  const allBlogPosts = await getCollection("post", ({ data }) => {
     return import.meta.env.PROD ? data.draft !== true : true;
   });
 
@@ -165,7 +165,7 @@ export async function GetCategories() {
     }
     categories.get(categorySlug)!.posts.push({
       title: post.data.title,
-      id: `/posts/${IdToSlug(post.id)}`,
+      id: `/post/${IdToSlug(post.id)}`,
       date: new Date(post.data.published),
       tags: post.data.tags,
     });
