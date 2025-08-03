@@ -35,6 +35,11 @@ interface Configuration {
 
   bannerStyle: "LOOP";
 
+  // 豆瓣配置
+  douban: {
+    userId: string; // 豆瓣用户ID
+  };
+
   // Giscus评论系统配置
   giscus: {
     enable: boolean; // 新增：评论系统开关

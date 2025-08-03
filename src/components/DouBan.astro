@@ -1,0 +1,351 @@
+---
+const res = await fetch('http://localhost:4321/api/douban');
+const data = await res.json();
+
+type DoubanItem = {
+  title: string;
+  link: string;
+  rating: string;
+  poster: string;
+  pubDate: string;
+  status: string;
+  type: string;
+  comment?: string;
+};
+
+type SectionData = {
+  [key: string]: DoubanItem[];
+};
+---
+
+<div class="douban-container">
+  <h1 class="main-title">我的豆瓣动态</h1>
+  
+  <!-- 影视部分 -->
+  <section class="media-section">
+    <h2 class="section-title">📺 影视</h2>
+    <div class="status-tabs">
+      <div class="status-group">
+        <h3 class="status-title">在看 ({data.movies.watching.length})</h3>
+        <div class="items-grid">
+          {data.movies.watching.map((item: DoubanItem) => (
+            <div class="item-card">
+              <a href={item.link} class="item-link">
+                <img src={item.poster} alt={item.title} class="item-poster" />
+                <div class="item-info">
+                  <h4 class="item-title">{item.title}</h4>
+                  <p class="item-rating">{item.rating}</p>
+                  <p class="item-date">{item.pubDate}</p>
+                  {item.comment && <p class="item-comment">{item.comment}</p>}
+                </div>
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div class="status-group">
+        <h3 class="status-title">看过 ({data.movies.watched.length})</h3>
+        <div class="items-grid">
+          {data.movies.watched.map((item: DoubanItem) => (
+            <div class="item-card">
+              <a href={item.link} class="item-link">
+                <img src={item.poster} alt={item.title} class="item-poster" />
+                <div class="item-info">
+                  <h4 class="item-title">{item.title}</h4>
+                  <p class="item-rating">{item.rating}</p>
+                  <p class="item-date">{item.pubDate}</p>
+                  {item.comment && <p class="item-comment">{item.comment}</p>}
+                </div>
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div class="status-group">
+        <h3 class="status-title">想看 ({data.movies.wantToWatch.length})</h3>
+        <div class="items-grid">
+          {data.movies.wantToWatch.map((item: DoubanItem) => (
+            <div class="item-card">
+              <a href={item.link} class="item-link">
+                <img src={item.poster} alt={item.title} class="item-poster" />
+                <div class="item-info">
+                  <h4 class="item-title">{item.title}</h4>
+                  <p class="item-rating">{item.rating}</p>
+                  <p class="item-date">{item.pubDate}</p>
+                  {item.comment && <p class="item-comment">{item.comment}</p>}
+                </div>
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- 图书部分 -->
+  <section class="media-section">
+    <h2 class="section-title">📚 图书</h2>
+    <div class="status-tabs">
+      <div class="status-group">
+        <h3 class="status-title">在读 ({data.books.reading.length})</h3>
+        <div class="items-grid">
+          {data.books.reading.map((item: DoubanItem) => (
+            <div class="item-card">
+              <a href={item.link} class="item-link">
+                <img src={item.poster} alt={item.title} class="item-poster" />
+                <div class="item-info">
+                  <h4 class="item-title">{item.title}</h4>
+                  <p class="item-rating">{item.rating}</p>
+                  <p class="item-date">{item.pubDate}</p>
+                  {item.comment && <p class="item-comment">{item.comment}</p>}
+                </div>
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div class="status-group">
+        <h3 class="status-title">读过 ({data.books.read.length})</h3>
+        <div class="items-grid">
+          {data.books.read.map((item: DoubanItem) => (
+            <div class="item-card">
+              <a href={item.link} class="item-link">
+                <img src={item.poster} alt={item.title} class="item-poster" />
+                <div class="item-info">
+                  <h4 class="item-title">{item.title}</h4>
+                  <p class="item-rating">{item.rating}</p>
+                  <p class="item-date">{item.pubDate}</p>
+                  {item.comment && <p class="item-comment">{item.comment}</p>}
+                </div>
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div class="status-group">
+        <h3 class="status-title">想读 ({data.books.wantToRead.length})</h3>
+        <div class="items-grid">
+          {data.books.wantToRead.map((item: DoubanItem) => (
+            <div class="item-card">
+              <a href={item.link} class="item-link">
+                <img src={item.poster} alt={item.title} class="item-poster" />
+                <div class="item-info">
+                  <h4 class="item-title">{item.title}</h4>
+                  <p class="item-rating">{item.rating}</p>
+                  <p class="item-date">{item.pubDate}</p>
+                  {item.comment && <p class="item-comment">{item.comment}</p>}
+                </div>
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- 游戏部分 -->
+  <section class="media-section">
+    <h2 class="section-title">🎮 游戏</h2>
+    <div class="status-tabs">
+      <div class="status-group">
+        <h3 class="status-title">在玩 ({data.games.playing.length})</h3>
+        <div class="items-grid">
+          {data.games.playing.map((item: DoubanItem) => (
+            <div class="item-card">
+              <a href={item.link} class="item-link">
+                <img src={item.poster} alt={item.title} class="item-poster" />
+                <div class="item-info">
+                  <h4 class="item-title">{item.title}</h4>
+                  <p class="item-rating">{item.rating}</p>
+                  <p class="item-date">{item.pubDate}</p>
+                  {item.comment && <p class="item-comment">{item.comment}</p>}
+                </div>
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div class="status-group">
+        <h3 class="status-title">玩过 ({data.games.played.length})</h3>
+        <div class="items-grid">
+          {data.games.played.map((item: DoubanItem) => (
+            <div class="item-card">
+              <a href={item.link} class="item-link">
+                <img src={item.poster} alt={item.title} class="item-poster" />
+                <div class="item-info">
+                  <h4 class="item-title">{item.title}</h4>
+                  <p class="item-rating">{item.rating}</p>
+                  <p class="item-date">{item.pubDate}</p>
+                  {item.comment && <p class="item-comment">{item.comment}</p>}
+                </div>
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div class="status-group">
+        <h3 class="status-title">想玩 ({data.games.wantToPlay.length})</h3>
+        <div class="items-grid">
+          {data.games.wantToPlay.map((item: DoubanItem) => (
+            <div class="item-card">
+              <a href={item.link} class="item-link">
+                <img src={item.poster} alt={item.title} class="item-poster" />
+                <div class="item-info">
+                  <h4 class="item-title">{item.title}</h4>
+                  <p class="item-rating">{item.rating}</p>
+                  <p class="item-date">{item.pubDate}</p>
+                  {item.comment && <p class="item-comment">{item.comment}</p>}
+                </div>
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  .douban-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: var(--primary-font);
+  }
+  
+  .main-title {
+    text-align: center;
+    font-size: 2.5rem;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+    font-weight: bold;
+  }
+  
+  .media-section {
+    margin-bottom: 3rem;
+    background: var(--card-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .section-title {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+  }
+  
+  .status-group {
+    margin-bottom: 2rem;
+  }
+  
+  .status-title {
+    font-size: 1.3rem;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--primary-color-lighten);
+    border-radius: 0.5rem;
+    border-left: 4px solid var(--primary-color);
+  }
+  
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  
+  .item-card {
+    background: var(--background-color);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--primary-color-transparent);
+  }
+  
+  .item-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  .item-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .item-poster {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--primary-color-transparent);
+  }
+  
+  .item-info {
+    padding: 1rem;
+  }
+  
+  .item-title {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .item-rating {
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+  }
+  
+  .item-date {
+    color: var(--text-color-lighten);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .item-comment {
+    color: var(--text-color);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    background: var(--primary-color-lighten);
+    padding: 0.5rem;
+    border-radius: 0.3rem;
+    margin-top: 0.5rem;
+  }
+  
+  @media (max-width: 768px) {
+    .items-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    .item-poster {
+      height: 200px;
+    }
+    
+    .main-title {
+      font-size: 2rem;
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+    }
+  }
+</style>

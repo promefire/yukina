@@ -1,0 +1,333 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout title="清单">
+  <div class="checklist-container">
+    <h1 class="page-title">我的清单</h1>
+    
+    <div class="category-tabs">
+      <button class="tab-btn active" data-category="movies">电影</button>
+      <button class="tab-btn" data-category="books">图书</button>
+      <button class="tab-btn" data-category="games">游戏</button>
+    </div>
+
+    <div class="status-tabs">
+      <div class="status-group" data-category="movies">
+        <button class="status-btn active" data-status="watching">在看</button>
+        <button class="status-btn" data-status="watched">看过</button>
+        <button class="status-btn" data-status="wantToWatch">想看</button>
+      </div>
+      <div class="status-group hidden" data-category="books">
+        <button class="status-btn active" data-status="reading">在读</button>
+        <button class="status-btn" data-status="read">读过</button>
+        <button class="status-btn" data-status="wantToRead">想读</button>
+      </div>
+      <div class="status-group hidden" data-category="games">
+        <button class="status-btn active" data-status="playing">在玩</button>
+        <button class="status-btn" data-status="played">玩过</button>
+        <button class="status-btn" data-status="wantToPlay">想玩</button>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <div class="loading hidden">加载中...</div>
+      <div class="error hidden">加载失败，请稍后重试</div>
+      <div class="items-list" id="items-container"></div>
+    </div>
+  </div>
+</MainLayout>
+
+<style>
+/* --- 全局和标签样式 (无改动) --- */
+  .checklist-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  .page-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .category-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .tab-btn {
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 25px;
+    background: #f3f4f6;
+    color: #6b7280;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .tab-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+  .tab-btn:hover:not(.active) {
+    background: #e5e7eb;
+    transform: translateY(-1px);
+  }
+  .status-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+  .status-group {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: #f9fafb;
+    border-radius: 15px;
+    border: 1px solid #e5e7eb;
+  }
+  .status-btn {
+    padding: 0.5rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: #6b7280;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .status-btn.active {
+    background: white;
+    color: #4f46e5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .status-btn:hover:not(.active) {
+    color: #374151;
+  }
+  .content-area {
+    min-height: 400px;
+  }
+
+/* --- MODIFIED: 清理和简化的网格布局与卡片悬停效果 --- */
+  .items-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .item-card {
+    display: block; /* 让 <a> 标签表现得像块级元素 */
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    aspect-ratio: 2 / 3;
+    background-color: #e5e7eb; /* 加载时占位符颜色 */
+    text-decoration: none; /* 去除链接下划线 */
+  }
+
+  .item-card:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .item-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  
+
+  
+
+
+/* --- 状态和响应式样式 (无改动) --- */
+  .loading, .error, .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    font-size: 1.1rem;
+    color: #6b7280;
+  }
+  .error { color: #ef4444; }
+  .hidden { display: none; }
+  .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
+
+  @media (max-width: 768px) {
+    .checklist-container { padding: 1rem; }
+    .items-list {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+    }
+  }
+</style>
+
+<script>
+  let currentCategory = 'movies';
+  let currentStatus = 'watching';
+  let data = null;
+
+  // 初始化 (无改动)
+  document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    setupEventListeners();
+  });
+
+  // 事件监听 (无改动)
+  function setupEventListeners() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => switchCategory(e.target.dataset.category));
+    });
+
+    document.querySelectorAll('.status-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => switchStatus(e.target.dataset.status));
+    });
+  }
+
+  // 分类切换 (无改动)
+  function switchCategory(category) {
+    currentCategory = category;
+    
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.category === category);
+    });
+    
+    document.querySelectorAll('.status-group').forEach(group => {
+      group.classList.toggle('hidden', group.dataset.category !== category);
+    });
+    
+    const firstStatusBtn = document.querySelector(`.status-group[data-category="${category}"] .status-btn`);
+    if (firstStatusBtn) {
+      currentStatus = firstStatusBtn.dataset.status;
+      document.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
+      firstStatusBtn.classList.add('active');
+    }
+    
+    renderItems();
+  }
+
+  // 状态切换 (无改动)
+  function switchStatus(status) {
+    currentStatus = status;
+    document.querySelectorAll(`.status-group[data-category="${currentCategory}"] .status-btn`).forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.status === status);
+    });
+    renderItems();
+  }
+
+  // 加载数据 (保留了测试数据以防API失败)
+  async function loadData() {
+    const loading = document.querySelector('.loading');
+    const error = document.querySelector('.error');
+    const container = document.getElementById('items-container');
+    
+    loading.classList.remove('hidden');
+    error.classList.add('hidden');
+    container.innerHTML = '';
+    
+    try {
+      const response = await fetch('/api/douban');
+      if (!response.ok) throw new Error('Network response was not ok');
+      data = await response.json();
+    } catch (err) {
+      console.error('Failed to load data, using fallback test data:', err);
+      // Fallback test data
+      data = {
+        movies: {
+          watching: [
+            { title: "测试电影：星际穿越", poster: "https://img1.doubanio.com/view/photo/s_ratio_poster/public/p2206088801.webp", link: "#", pubDate: "2014-11-12", rating: "9.4", comment: "诺兰的科幻神作，亲情与宇宙的宏大叙事。" },
+            { title: "测试电影：瞬息全宇宙", poster: "https://img9.doubanio.com/view/photo/s_ratio_poster/public/p2871553046.webp", link: "#", pubDate: "2022-03-25", rating: "7.6", comment: "天马行空的想象力，但内核还是家庭。" }
+          ], watched: [], wantToWatch: [] },
+        books: { reading: [], read: [], wantToRead: [] },
+        games: { playing: [], played: [], wantToPlay: [] }
+      };
+    } finally {
+        loading.classList.add('hidden');
+        renderItems();
+    }
+  }
+
+  // 评分生成函数 (保持你的简化版)
+  function generateRating(rating) {
+    const ratingValue = parseFloat(rating);
+    if (isNaN(ratingValue) || ratingValue <= 0) {
+      return `<div class="star-rating"><span style="color: #9ca3af; font-size: 0.8rem;">暂无评分</span></div>`;
+    }
+    return `<div class="star-rating"><span style="color: #f59e0b; font-weight: bold; font-size: 0.9rem;">${ratingValue}</span><span style="color: #d1d5db; font-size: 0.8rem;">/10</span></div>`;
+  }
+  
+  // --- MODIFIED: 使用DOM API创建元素，避免XSS攻击 ---
+  function renderItems() {
+    const container = document.getElementById('items-container');
+    const items = data?.[currentCategory]?.[currentStatus] || [];
+    
+    if (items.length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📚</div><p>暂无内容</p></div>';
+      return;
+    }
+    
+    // 清空容器
+    container.innerHTML = '';
+    
+    // 安全地创建元素
+    items.forEach(item => {
+      // 数据安全处理
+      const title = (item.title || '未知标题').replace(/[<>"'&]/g, (match) => {
+        const escapeMap = { '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '&': '&amp;' };
+        return escapeMap[match];
+      });
+      
+      const poster = item.poster || '/images/placeholder.jpg';
+      const link = item.link || '#';
+      const pubDate = formatDate(item.pubDate) || '未知日期';
+      const comment = (item.comment || '').replace(/[<>"'&]/g, (match) => {
+        const escapeMap = { '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '&': '&amp;' };
+        return escapeMap[match];
+      });
+      
+      // 创建卡片容器
+      const cardLink = document.createElement('a');
+      cardLink.className = 'item-card';
+      cardLink.href = link;
+      cardLink.target = '_blank';
+      cardLink.rel = 'noopener noreferrer';
+      
+      // 创建图片元素
+      const img = document.createElement('img');
+      img.className = 'item-poster';
+      img.src = poster;
+      img.alt = title;
+      img.loading = 'lazy';
+      img.onerror = function() {
+        this.src = '/images/placeholder.jpg';
+      };
+      
+      // 组装卡片
+      cardLink.appendChild(img);
+      
+      // 添加到容器
+      container.appendChild(cardLink);
+    });
+  }
+
+  // 日期格式化 (无改动)
+  function formatDate(dateString) {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch {
+      return dateString;
+    }
+  }
+</script>

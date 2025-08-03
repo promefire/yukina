@@ -1,0 +1,57 @@
+---
+const { toc } = Astro.props;
+---
+
+<div class="toc-container">
+  <h3 class="toc-title">目录</h3>
+  <div class="toc-content" set:html={toc}></div>
+</div>
+
+<style>
+  .toc-container {
+    max-height: calc(100vh - 200px); /* 限制最大高度 */
+    overflow-y: auto; /* 内容过多时可滚动 */
+  }
+  
+  .toc-title {
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary, #333);
+    border-bottom: 1px solid var(--border-color, #eee);
+    padding-bottom: 8px;
+  }
+  
+  .toc-content {
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  
+  /* 目录链接样式 */
+  .toc-content :global(a) {
+    color: var(--text-secondary, #666);
+    text-decoration: none;
+    display: block;
+    padding: 4px 0;
+    border-left: 2px solid transparent;
+    padding-left: 8px;
+    transition: all 0.2s ease;
+  }
+  
+  .toc-content :global(a:hover) {
+    color: var(--accent-color, #0066cc);
+    border-left-color: var(--accent-color, #0066cc);
+    background-color: var(--background-secondary, #f8f9fa);
+  }
+  
+  /* 嵌套层级缩进 */
+  .toc-content :global(ol) {
+    margin: 0;
+    padding-left: 16px;
+  }
+  
+  .toc-content :global(li) {
+    list-style: none;
+    margin: 2px 0;
+  }
+</style>

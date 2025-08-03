@@ -22,18 +22,24 @@ const YukinaConfig: Configuration = {
       href: "/archive",
     },
     {
+      nameKey: I18nKeys.nav_bar_checklist,
+      href: "/checklist",
+    },
+    {
       nameKey: I18nKeys.nav_bar_about,
       href: "/about",
     },
-    // {
-    //   nameKey: I18nKeys.nav_bar_github,
-    //   href: "https://github.com/WhitePaper233/yukina",
-    // },
   ],
 
   username: "桥边红药",
   sign: "我的技术与生活",
   avatarUrl: "https://img.promefire.top/blog-img/2025/07/d0c7f2b2251c7b315827b920b91ecb80.webp",
+  
+  // 豆瓣配置
+  douban: {
+    userId: "270838653", // 您的豆瓣用户ID
+  },
+
   socialLinks: [
     {
       icon: "line-md:github-loop",
@@ -43,10 +49,6 @@ const YukinaConfig: Configuration = {
       icon: "mingcute:bilibili-line",
       link: "https://space.bilibili.com/383302721",
     },
-    // {
-    //   icon: "mingcute:netease-music-line",
-    //   link: "https://music.163.com/#/user/home?id=125291648",
-    // },
   ],
   maxSidebarCategoryChip: 6, // It is recommended to set it to a common multiple of 2 and 3
   maxSidebarTagChip: 12,

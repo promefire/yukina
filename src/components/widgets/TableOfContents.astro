@@ -1,0 +1,307 @@
+---
+import { Icon } from "astro-icon/components";
+
+export interface Props {
+  toc?: any[];
+}
+
+const { toc } = Astro.props;
+
+// 构建层级结构的函数
+function buildTocHierarchy(headings: any[]) {
+  if (!headings || headings.length === 0) return [];
+  
+  const result: any[] = [];
+  const stack: any[] = [];
+  
+  headings.forEach(heading => {
+    const item = { ...heading, children: [] };
+    
+    // 移除比当前层级深或相等的项目
+    while (stack.length > 0 && stack[stack.length - 1].depth >= item.depth) {
+      stack.pop();
+    }
+    
+    // 如果栈为空，添加到根级别
+    if (stack.length === 0) {
+      result.push(item);
+    } else {
+      // 否则添加为最后一个项目的子项
+      stack[stack.length - 1].children.push(item);
+    }
+    
+    stack.push(item);
+  });
+  
+  return result;
+}
+
+const tocItems = buildTocHierarchy(toc);
+---
+
+{tocItems && tocItems.length > 0 && (
+  <div
+    class="toc-card onload-animation space-y-2 rounded-3xl bg-[var(--card-color)] p-3"
+    style="animation-delay: calc(var(--onload-animation-delay) + 0.5 * var(--onload-animation-interval));"
+  >
+    <div class="title m-[0.375rem]">
+      <div class="pl-4 text-xl font-bold text-[var(--text-color)]">
+        目录
+      </div>
+    </div>
+    <div class="toc-content max-h-96 overflow-y-auto">
+      <ul class="space-y-1">
+        {tocItems.map((item) => (
+          <li>
+            <a
+              href={`#${item.slug}`}
+              class={`toc-link block rounded-lg px-3 py-2 text-sm transition-all hover:bg-[var(--primary-color-lighten)] hover:text-[var(--primary-color)] ${
+                item.depth <= 2 ? 'font-medium text-[var(--text-color)]' : 'ml-4 text-[var(--text-color-lighten)]'
+              }`}
+              data-heading-id={item.slug}
+            >
+              {item.text}
+            </a>
+            {item.children && item.children.length > 0 && (
+              <ul class="ml-2 space-y-1">
+                {item.children.map((child) => (
+                  <li>
+                    <a
+                      href={`#${child.slug}`}
+                      class="toc-link block rounded-lg px-3 py-1.5 text-xs text-[var(--text-color-lighten)] transition-all hover:bg-[var(--primary-color-lighten)] hover:text-[var(--primary-color)] ml-4"
+                      data-heading-id={child.slug}
+                    >
+                      {child.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+)}
+
+<style>
+  .title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: relative;
+  }
+
+  .title::before {
+    position: absolute;
+    display: block;
+    content: " ";
+    background-color: var(--primary-color);
+    top: 3px;
+    bottom: 3px;
+    width: 0.3rem;
+    border-radius: 4px;
+  }
+
+  .toc-link {
+    font-family: var(--primary-font);
+  }
+  
+  .toc-link.active {
+    background-color: var(--primary-color-lighten) !important;
+    color: var(--primary-color) !important;
+    font-weight: 600;
+  }
+
+  .toc-content {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color-lighten) transparent;
+  }
+
+  .toc-content::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .toc-content::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .toc-content::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color-lighten);
+    border-radius: 2px;
+  }
+  
+  .toc-card {
+    background-color: var(--card-color);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+</style>
+
+<style is:global>
+  /* 全局样式确保粘性定位生效 */
+  .toc-sticky-container {
+    position: sticky !important;
+    top: 20px !important;
+    z-index: 999 !important;
+  }
+  
+  /* 响应式处理 */
+  @media (max-width: 1279px) {
+    .toc-sticky-container {
+      position: relative !important;
+      top: auto !important;
+    }
+  }
+  
+  @media (min-width: 1280px) {
+    .toc-sticky-container {
+      display: block !important;
+    }
+  }
+</style>
+
+<script>
+  class TableOfContents {
+    private observer: IntersectionObserver | null = null;
+    private headings: NodeListOf<Element> | null = null;
+    private tocLinks: NodeListOf<HTMLAnchorElement> | null = null;
+    
+    constructor() {
+      this.init();
+    }
+    
+    init() {
+      // 等待DOM加载完成
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => this.setup());
+      } else {
+        this.setup();
+      }
+    }
+    
+    setup() {
+      // 获取文章内容区域的所有标题
+      this.headings = document.querySelectorAll('article h1, article h2, article h3, article h4, article h5, article h6, .content h1, .content h2, .content h3, .content h4, .content h5, .content h6');
+      this.tocLinks = document.querySelectorAll('.toc-link');
+      
+      if (!this.headings || this.headings.length === 0) {
+        console.log('No headings found for TOC');
+        return;
+      }
+      
+      console.log(`Found ${this.headings.length} headings and ${this.tocLinks?.length} TOC links`);
+      
+      // 设置 Intersection Observer
+      this.setupObserver();
+      
+      // 添加平滑滚动
+      this.setupSmoothScroll();
+    }
+    
+    setupObserver() {
+      if (!this.headings) return;
+      
+      const options = {
+        root: null,
+        rootMargin: '-10% 0px -80% 0px',
+        threshold: [0, 0.25, 0.5, 0.75, 1]
+      };
+      
+      this.observer = new IntersectionObserver((entries) => {
+        let activeId = '';
+        let maxRatio = 0;
+        
+        // 找到可见度最高的标题
+        entries.forEach(entry => {
+          if (entry.isIntersecting && entry.intersectionRatio > maxRatio) {
+            maxRatio = entry.intersectionRatio;
+            activeId = entry.target.id;
+          }
+        });
+        
+        // 如果没有找到相交的元素，使用第一个可见的
+        if (!activeId) {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              activeId = entry.target.id;
+            }
+          });
+        }
+        
+        if (activeId) {
+          this.updateActiveLink(activeId);
+        }
+      }, options);
+      
+      // 观察所有标题
+      this.headings.forEach(heading => {
+        if (this.observer) {
+          this.observer.observe(heading);
+        }
+      });
+    }
+    
+    updateActiveLink(activeId: string) {
+      if (!this.tocLinks) return;
+      
+      // 移除所有活跃状态
+      this.tocLinks.forEach(link => {
+        link.classList.remove('active');
+      });
+      
+      // 添加当前活跃状态
+      const activeLink = document.querySelector(`.toc-link[href="#${activeId}"]`) as HTMLAnchorElement;
+      if (activeLink) {
+        activeLink.classList.add('active');
+      }
+    }
+    
+    setupSmoothScroll() {
+      if (!this.tocLinks) return;
+      
+      this.tocLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = link.getAttribute('href')?.substring(1);
+          const targetElement = document.getElementById(targetId || '');
+          
+          if (targetElement) {
+            targetElement.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+            
+            // 更新 URL
+            history.pushState(null, '', `#${targetId}`);
+          }
+        });
+      });
+    }
+    
+    destroy() {
+      if (this.observer) {
+        this.observer.disconnect();
+        this.observer = null;
+      }
+    }
+  }
+  
+  // 全局实例
+  let tocInstance: TableOfContents | null = null;
+  
+  // 初始化函数
+  function initTOC() {
+    if (tocInstance) {
+      tocInstance.destroy();
+    }
+    tocInstance = new TableOfContents();
+  }
+  
+  // 初始化
+  initTOC();
+  
+  // 支持 Astro 的页面转换
+  document.addEventListener('astro:after-swap', initTOC);
+</script>
