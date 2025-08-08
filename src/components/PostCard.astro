@@ -17,6 +17,7 @@ export interface Props {
   description?: string;
   image?: string;
   readingMetadata: { time: number; wordCount: number };
+  password?: string;
 }
 
 const props = Astro.props;
@@ -71,6 +72,11 @@ const { time, wordCount } = props.readingMetadata;
         </div>
         <a href={contentUrl} class="title">
           <p class="truncate">{props.title}</p>
+          {props.password && (
+            <div class="lock-icon">
+              <Icon name="mdi:lock" class="text-[var(--primary-color)]" />
+            </div>
+          )}
           <Icon
             name="cuida:caret-right-outline"
             class="translate-y-[0.07rem] text-[var(--primary-color)]"
@@ -160,6 +166,10 @@ const { time, wordCount } = props.readingMetadata;
     @apply flex w-full flex-row items-center space-x-1 align-top text-xl font-semibold text-[var(--text-color)] lg:text-2xl;
     @apply transition-all hover:text-[var(--primary-color)];
     font-family: var(--primary-font);
+  }
+
+  .lock-icon {
+    @apply flex items-center justify-center;
   }
 
   .data {
