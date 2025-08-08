@@ -3,6 +3,7 @@ import Main from "../layouts/MainLayout.astro";
 import Markdown from "../components/Markdown.astro";
 import CopyRight from "../components/misc/CopyRight.astro";
 import Comments from "../components/Comments.astro";
+import PasswordProtected from "../components/PasswordProtected.astro";
 
 interface Props {
   title?: string;
@@ -15,6 +16,7 @@ interface Props {
   };
   author?: string;
   sourceLink?: string;
+  password?: string;
 }
 
 const {
@@ -25,6 +27,7 @@ const {
   license,
   author,
   sourceLink,
+  password,
 } = Astro.props;
 ---
 
@@ -35,25 +38,41 @@ const {
   hideCategories={true}
   hideTags={true}
 >
-  <!-- <Fragment set:html={tocHTMLString} /> -->
   <div class="article-wrapper">
     <div class="article">
-      <Markdown>
-        <slot />
-      </Markdown>
-      {
-        published && title && (
-          <CopyRight
-            title={title}
-            published={published}
-            license={license}
-            author={author}
-            sourceLink={sourceLink}
-          />
-        )
-      }
-      <!-- 添加评论组件 -->
-      <Comments />
+      {password ? (
+        <PasswordProtected password={password}>
+          <Markdown>
+            <slot />
+          </Markdown>
+          {published && title && (
+            <CopyRight
+              title={title}
+              published={published}
+              license={license}
+              author={author}
+              sourceLink={sourceLink}
+            />
+          )}
+          <Comments />
+        </PasswordProtected>
+      ) : (
+        <>
+          <Markdown>
+            <slot />
+          </Markdown>
+          {published && title && (
+            <CopyRight
+              title={title}
+              published={published}
+              license={license}
+              author={author}
+              sourceLink={sourceLink}
+            />
+          )}
+          <Comments />
+        </>
+      )}
     </div>
   </div>
 </Main>
