@@ -28,7 +28,7 @@ export default defineConfig({
       containers: ["main", "footer", ".banner-inner"],
       smoothScrolling: true,
       progress: true,
-      cache: true,
+      cache: false,
       preload: true,
       updateHead: true,
       updateBodyClass: false,
