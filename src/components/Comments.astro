@@ -10,24 +10,52 @@ import YukinaConfig from "../../yukina.config";
 
 {YukinaConfig.giscus.enable && (
   <script define:vars={{ giscusConfig: YukinaConfig.giscus }}>
-  // 等待DOM加载完成
-  document.addEventListener('DOMContentLoaded', function() {
-    loadGiscus();
+  // 立即执行函数，确保在任何情况下都能加载
+  (function() {
+    let isLoaded = false;
     
-    // 监听主题变化
-    const observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
-          updateGiscusTheme();
-        }
+    function initGiscus() {
+      if (isLoaded) return;
+      
+      const container = document.getElementById('giscus-container');
+      if (!container) {
+        // 如果容器还没准备好，稍后重试
+        setTimeout(initGiscus, 100);
+        return;
+      }
+      
+      loadGiscus();
+      isLoaded = true;
+      
+      // 监听主题变化
+      const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+            updateGiscusTheme();
+          }
+        });
       });
-    });
+      
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme']
+      });
+    }
     
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme']
+    // 多种方式确保加载
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initGiscus);
+    } else {
+      // DOM已经加载完成，立即执行
+      initGiscus();
+    }
+    
+    // 监听 Astro 页面切换事件
+    document.addEventListener('astro:page-load', function() {
+      isLoaded = false;
+      setTimeout(initGiscus, 100);
     });
-  });
+  })();
   
   function loadGiscus() {
     const container = document.getElementById('giscus-container');
