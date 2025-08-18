@@ -15,6 +15,7 @@ import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 import YukinaConfig from "./yukina.config";
 
 import pagefind from "astro-pagefind";
+import rehypeCenteredImages, { presetUserStyle } from "./src/plugins/rehype-centered-images.js";
 
 // https://astro.build/config
 export default defineConfig({
@@ -45,6 +46,7 @@ export default defineConfig({
     rehypePlugins: [
       rehypeSlug,
       rehypeKatex,
+      [rehypeCenteredImages, presetUserStyle],
       [
         rehypeAutolinkHeadings,
         {
