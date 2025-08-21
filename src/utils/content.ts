@@ -43,6 +43,16 @@ export async function GetSortedPosts() {
     return import.meta.env.PROD ? data.draft !== true : true;
   });
   const sorted = allBlogPosts.sort((a, b) => {
+    const topA = a.data.top ;
+    const topB = b.data.top ;
+     if (topA !== undefined && topB !== undefined) {
+      return topA - topB;
+    } else if (topA !== undefined) {
+      return -1;
+    } else if (topB !== undefined) {
+      return 1;
+    }
+
     const dateA = new Date(a.data.published);
     const dateB = new Date(b.data.published);
     return dateA > dateB ? -1 : 1;

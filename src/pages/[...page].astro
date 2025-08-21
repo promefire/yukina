@@ -36,6 +36,7 @@ const { page } = Astro.props;
               description={entry.data.description}
               image={entry.data.cover}
               password={entry.data.password}
+              top={entry.data.top}
               readingMetadata={
                 (entry.rendered!.metadata as any).frontmatter.readingMetadata
               }

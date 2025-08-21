@@ -18,6 +18,7 @@ export interface Props {
   image?: string;
   readingMetadata: { time: number; wordCount: number };
   password?: string;
+  top?: number;
 }
 
 const props = Astro.props;
@@ -71,6 +72,11 @@ const { time, wordCount } = props.readingMetadata;
         >
         </div>
         <a href={contentUrl} class="title">
+          {props.top !== undefined && (
+            <div class="top-icon" title="置顶">
+              <Icon name="mdi:pin" class="text-[var(--primary-color)]" />
+            </div>
+          )}
           <p class="truncate">{props.title}</p>
           {props.password && (
             <div class="lock-icon">
@@ -168,6 +174,7 @@ const { time, wordCount } = props.readingMetadata;
     font-family: var(--primary-font);
   }
 
+  .top-icon,
   .lock-icon {
     @apply flex items-center justify-center;
   }

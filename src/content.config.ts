@@ -19,6 +19,7 @@ const post = defineCollection({
     licenseName: z.string().optional(),
     licenseUrl: z.string().optional(),
     password: z.coerce.string().optional(),
+    top: z.number().int().optional(),
   }),
 });
 

@@ -75,13 +75,13 @@ const YukinaConfig: Configuration = {
   bannerStyle: "LOOP", // 'loop' | 'static' | 'hidden'
 
   // Giscus评论系统配置
-  giscus: {
+   giscus: {
     enable: true, // 设置为true启用评论，false禁用评论
-    repo: "",
-    repoId: "",
-    category: "",
-    categoryId: "",
-    mapping: "url",
+    repo: "promefire/myBlogComment",
+    repoId: "R_kgDOJnPF5g",
+    category: "Announcements",
+    categoryId: "DIC_kwDOJnPF5s4CbscM",
+    mapping: "pathname",
     strict: "0",
     reactionsEnabled: "1",
     emitMetadata: "0",
